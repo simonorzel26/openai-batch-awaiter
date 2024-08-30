@@ -1,85 +1,117 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+Certainly! Below is a README file tailored for your NestJS project that integrates with OpenAI's Batch API. This application handles batch processing by storing batch requests, periodically checking their status, and triggering a webhook when the batch is completed since OpenAI's API doesn't provide webhooks.
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+---
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+# OpenAI Batch Processing with NestJS
 
-## Description
+This project is a NestJS application designed to manage batch processing tasks with OpenAI's Batch API. It stores batch requests in an SQLite database, periodically checks the status of these batches using OpenAI's API, and triggers a webhook when a batch is completed. This setup is useful since OpenAI's Batch API does not provide native webhook support.
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## Features
 
-## Project setup
+- **Batch Storage**: Store OpenAI batch processing requests in an SQLite database.
+- **Batch Status Checking**: Periodically check the status of all batches stored in the database using OpenAI's API.
+- **Webhook Triggering**: Automatically call a specified webhook URL when a batch is completed.
+- **Persistence**: Uses SQLite for persistent data storage across deployments.
+
+## Project Structure
 
 ```bash
-$ pnpm install
+src/
+├── batch-awaiter/
+│   ├── batch-awaiter.service.ts        # Handles storing batch requests in the database
+│   ├── batch-awaiter.controller.ts     # Exposes an API to submit batch requests
+│   ├── batch.entity.ts                 # Defines the BatchEntity for TypeORM
+│   ├── batch-awaiter.module.ts         # Module that includes batch-related services and controllers
+├── batch-status/
+│   ├── batch-status-checker.service.ts # Checks the status of batches via OpenAI's API and updates the database
+│   ├── batch-status-checker.scheduler.ts # Schedules the periodic checking of batch statuses
+├── app.module.ts                       # Main application module
 ```
 
-## Compile and run the project
+## Getting Started
 
-```bash
-# development
-$ pnpm run start
+### Prerequisites
 
-# watch mode
-$ pnpm run start:dev
+- **Node.js**: Ensure you have Node.js installed.
+- **SQLite**: The application uses SQLite as the database, which is included with most Node.js installations.
 
-# production mode
-$ pnpm run start:prod
-```
+### Installation
 
-## Run tests
+1. **Clone the repository:**
 
-```bash
-# unit tests
-$ pnpm run test
+   ```bash
+   git clone https://github.com/yourusername/openai-batch-processor.git
+   cd openai-batch-processor
+   ```
 
-# e2e tests
-$ pnpm run test:e2e
+2. **Install dependencies:**
 
-# test coverage
-$ pnpm run test:cov
-```
+   ```bash
+   npm install
+   ```
 
-## Resources
+3. **Set up environment variables:**
 
-Check out a few resources that may come in handy when working with NestJS:
+   Create a `.env` file in the root of your project and add the following:
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+   ```bash
+   OPENAI_API_KEY=your_openai_api_key
+   DATABASE_PATH=./database.sqlite
+   ```
 
-## Support
+4. **Run the application:**
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+   ```bash
+   npm run start:dev
+   ```
 
-## Stay in touch
+### Usage
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+1. **Submit a Batch Request:**
 
-## License
+   You can submit a batch processing request to the API using the following endpoint:
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+   ```http
+   POST /batch-awaiter
+   Content-Type: application/json
+
+   {
+     "id": "your-custom-batch-id",
+     "webhookUrl": "https://your-webhook-url.com/webhook"
+   }
+   ```
+
+   This will store the batch request in the database and kick off the processing with OpenAI.
+
+2. **Check Batch Status:**
+
+   The application will automatically check the status of all batches in progress every minute. When a batch is completed, the specified webhook URL will be called with the results.
+
+### Configuration
+
+- **Batch Status Checking Interval:**
+  - The batch status checking interval is set to run every minute using a cron job. You can adjust this interval by modifying the `CronExpression` in `batch-status-checker.scheduler.ts`.
+
+- **Database Configuration:**
+  - The application uses SQLite by default. If you want to switch to another database, update the TypeORM configuration in `app.module.ts`.
+
+### Deployment
+
+When deploying this application, ensure that your SQLite database is either persisted across deployments or switch to a more robust database like PostgreSQL for production environments.
+
+### Contributing
+
+If you want to contribute to this project, feel free to open a pull request or issue on GitHub.
+
+### License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+### Acknowledgements
+
+- **OpenAI** for providing the Batch API.
+- **NestJS** for the robust and flexible framework.
+
+---
+
+This README provides all the necessary details for setting up, running, and using your OpenAI Batch Processing application in NestJS.
