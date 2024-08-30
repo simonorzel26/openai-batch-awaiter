@@ -1,0 +1,14 @@
+version: '3.8'
+services:
+  app:
+    build: .
+    container_name: openai-batch-processor
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - DATABASE_PATH=/app/database.sqlite
+    volumes:
+      - ./database.sqlite:/app/database.sqlite
+    restart: unless-stopped
