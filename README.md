@@ -1,6 +1,3 @@
-Certainly! Below is a README file tailored for your NestJS project that integrates with OpenAI's Batch API. This application handles batch processing by storing batch requests, periodically checking their status, and triggering a webhook when the batch is completed since OpenAI's API doesn't provide webhooks.
-
----
 
 # OpenAI Batch Processing with NestJS
 
@@ -111,7 +108,3 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 - **OpenAI** for providing the Batch API.
 - **NestJS** for the robust and flexible framework.
-
----
-
-This README provides all the necessary details for setting up, running, and using your OpenAI Batch Processing application in NestJS.
