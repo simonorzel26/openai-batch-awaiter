@@ -23,7 +23,7 @@ export class CallWebhookService {
 
     for (const batch of batches) {
       try {
-        const response = await this.callWebhook(batch.webhookUrl);
+        const response = await this.callWebhook(batch.webhookUrl, batch.status);
         
         if (response.ok) {
           // If the webhook call was successful, delete the batch from the database
@@ -38,12 +38,12 @@ export class CallWebhookService {
     }
   }
 
-  private async callWebhook(webhookUrl: string): Promise<Response> {
+  private async callWebhook(webhookUrl: string, status: string): Promise<Response> {
     try {
       const response = await fetch(webhookUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status: 'completed' }),
+        body: JSON.stringify({ status: status }),
       }) as unknown as Response;
 
       return response;
