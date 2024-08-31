@@ -7,7 +7,7 @@ import {
 } from '@nestjs/common';
 import { BatchAwaiterService } from './batch-awaiter.service';
 
-@Controller('batchAwaiter')
+@Controller('batch-awaiter')
 export class BatchAwaiterController {
   constructor(private readonly batchAwaiterService: BatchAwaiterService) {}
 
