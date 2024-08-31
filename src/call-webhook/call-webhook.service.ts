@@ -18,7 +18,8 @@ export class CallWebhookService {
         status: In(['cancelled', 'expired', 'completed', 'failed']),
       },
     });
-    console.log('Batches to process:', batches);
+    // Detailed log for this file specific
+    console.log('Batches to notify webhook:', batches);
 
     for (const batch of batches) {
       try {

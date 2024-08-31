@@ -19,7 +19,8 @@ export class BatchStatusCheckerService {
         status: Not(In(['cancelled', 'expired', 'completed', 'failed'])),
       },
     });
-    console.log('batches', batches);
+
+    console.log('Batches to check status:', batches);
 
     for (const batch of batches) {
       try {

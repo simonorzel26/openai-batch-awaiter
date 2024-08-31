@@ -6,6 +6,8 @@ import { BatchEntity } from './batch.entity';
 import { BatchStatusCheckerService } from '../batch-status/batch-status-checker.service';
 import { BatchStatusCheckerScheduler } from '../batch-status/batch-status-checker.scheduler';
 import { ScheduleModule } from '@nestjs/schedule';
+import { CallWebhookScheduler } from 'src/call-webhook/call-webhook.scheduler';
+import { CallWebhookService } from 'src/call-webhook/call-webhook.service';
 
 @Module({
   imports: [
@@ -16,6 +18,8 @@ import { ScheduleModule } from '@nestjs/schedule';
     BatchAwaiterService,
     BatchStatusCheckerService,
     BatchStatusCheckerScheduler,
+    CallWebhookScheduler,
+    CallWebhookService,
   ],
   controllers: [BatchAwaiterController],
 })
