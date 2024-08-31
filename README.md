@@ -1,27 +1,39 @@
-
 # OpenAI Batch Processing with NestJS
 
-This project is a NestJS application designed to manage batch processing tasks with OpenAI's Batch API. It stores batch requests in an SQLite database, periodically checks the status of these batches using OpenAI's API, and triggers a webhook when a batch is completed. This setup is useful since OpenAI's Batch API does not provide native webhook support.
+Welcome to the **OpenAI Batch Processing with NestJS** project! This open-source project is designed to simplify and automate batch processing tasks with OpenAI's Batch API. By leveraging the power of NestJS and SQLite, this application efficiently manages batch requests, periodically checks their status, and automatically triggers webhooks to notify you when your batches are completed. The best part? It’s self-hosted and easily deployable with Docker.
 
-## Features
+## How It Works
 
-- **Batch Storage**: Store OpenAI batch processing requests in an SQLite database.
-- **Batch Status Checking**: Periodically check the status of all batches stored in the database using OpenAI's API.
-- **Webhook Triggering**: Automatically call a specified webhook URL when a batch is completed.
-- **Persistence**: Uses SQLite for persistent data storage across deployments.
+This application is a self-hosted solution that automates the entire lifecycle of OpenAI batch processing:
+
+1. **Batch Request Submission**: Submit batch requests via a simple API.
+2. **Status Monitoring**: The application periodically checks the status of all submitted batches using OpenAI's Batch API.
+3. **Webhook Notification**: When a batch completes, a webhook is automatically triggered to notify you with the results, ensuring you stay informed without manual checks.
+4. **Persistence**: All data is stored in an SQLite database, ensuring your batch requests are persistent across deployments.
+
+## Key Features
+
+- **Automated Batch Management**: Submit, monitor, and manage your OpenAI batch requests with ease.
+- **Webhook Notifications**: Receive real-time updates via webhooks as soon as your batches are completed.
+- **Self-Hosted**: Easily deploy and run the application on your infrastructure with Docker.
+- **Open Source**: Fully open source, allowing you to customize and extend the application to fit your needs.
+- **Simple Setup**: Uses SQLite for persistent storage, making it easy to set up without additional dependencies.
 
 ## Project Structure
 
 ```bash
 src/
 ├── batch-awaiter/
-│   ├── batch-awaiter.service.ts        # Handles storing batch requests in the database
+│   ├── batch-awaiter.service.ts        # Handles storing and processing batch requests
 │   ├── batch-awaiter.controller.ts     # Exposes an API to submit batch requests
 │   ├── batch.entity.ts                 # Defines the BatchEntity for TypeORM
-│   ├── batch-awaiter.module.ts         # Module that includes batch-related services and controllers
+│   ├── batch-awaiter.module.ts         # Module for batch-related services and controllers
 ├── batch-status/
-│   ├── batch-status-checker.service.ts # Checks the status of batches via OpenAI's API and updates the database
-│   ├── batch-status-checker.scheduler.ts # Schedules the periodic checking of batch statuses
+│   ├── batch-status-checker.service.ts # Periodically checks the status of batches via OpenAI's API
+│   ├── batch-status-checker.scheduler.ts # Schedules regular status checks for batches
+├── call-webhook/
+│   ├── call-webhook.service.ts         # Handles webhook notifications when batches complete
+│   ├── call-webhook.scheduler.ts       # Schedules webhook calls based on batch completion
 ├── app.module.ts                       # Main application module
 ```
 
@@ -30,7 +42,8 @@ src/
 ### Prerequisites
 
 - **Node.js**: Ensure you have Node.js installed.
-- **SQLite**: The application uses SQLite as the database, which is included with most Node.js installations.
+- **SQLite**: SQLite is used for the database, included with most Node.js installations.
+- **Docker**: For easy deployment and self-hosting.
 
 ### Installation
 
@@ -53,7 +66,7 @@ src/
 
    ```bash
    OPENAI_API_KEY=your_openai_api_key
-   DATABASE_PATH=./database.sqlite
+   SQLITE_DATABASE_URL=./database.sqlite
    ```
 
 4. **Run the application:**
@@ -66,7 +79,7 @@ src/
 
 1. **Submit a Batch Request:**
 
-   You can submit a batch processing request to the API using the following endpoint:
+   Use the following API endpoint to submit a batch processing request:
 
    ```http
    POST /batch-awaiter
@@ -78,27 +91,41 @@ src/
    }
    ```
 
-   This will store the batch request in the database and kick off the processing with OpenAI.
+   This will store the batch request in the database and initiate the processing with OpenAI.
 
-2. **Check Batch Status:**
+2. **Monitor Batch Status:**
 
-   The application will automatically check the status of all batches in progress every minute. When a batch is completed, the specified webhook URL will be called with the results.
+   The application automatically checks the status of all batches every minute. When a batch completes, it triggers the specified webhook URL with the results.
+
+### Docker Deployment
+
+To easily deploy the application using Docker:
+
+1. **Build the Docker image:**
+
+   ```bash
+   docker build -t openai-batch-processor .
+   ```
+
+2. **Run the Docker container:**
+
+   ```bash
+   docker run -d -p 3000:3000 --env-file .env openai-batch-processor
+   ```
+
+   This will run the application in a Docker container, making it accessible at `http://localhost:3000`.
 
 ### Configuration
 
 - **Batch Status Checking Interval:**
-  - The batch status checking interval is set to run every minute using a cron job. You can adjust this interval by modifying the `CronExpression` in `batch-status-checker.scheduler.ts`.
+  - By default, the application checks batch statuses every minute. You can adjust this interval by modifying the `CronExpression` in `batch-status-checker.scheduler.ts`.
 
 - **Database Configuration:**
-  - The application uses SQLite by default. If you want to switch to another database, update the TypeORM configuration in `app.module.ts`.
-
-### Deployment
-
-When deploying this application, ensure that your SQLite database is either persisted across deployments or switch to a more robust database like PostgreSQL for production environments.
+  - The application uses SQLite by default, but you can switch to another database by updating the TypeORM configuration in `app.module.ts`.
 
 ### Contributing
 
-If you want to contribute to this project, feel free to open a pull request or issue on GitHub.
+We welcome contributions! If you’d like to contribute to this project, feel free to fork the repository, make changes, and submit a pull request. If you find any issues, please open an issue on GitHub.
 
 ### License
 
@@ -107,4 +134,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ### Acknowledgements
 
 - **OpenAI** for providing the Batch API.
-- **NestJS** for the robust and flexible framework.
+- **NestJS** for the robust and flexible framework that powers this application.
