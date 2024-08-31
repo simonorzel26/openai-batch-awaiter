@@ -4,7 +4,9 @@ import { BatchStatusCheckerService } from './batch-status-checker.service';
 
 @Injectable()
 export class BatchStatusCheckerScheduler {
-  constructor(private readonly batchStatusCheckerService: BatchStatusCheckerService) {}
+  constructor(
+    private readonly batchStatusCheckerService: BatchStatusCheckerService,
+  ) {}
 
   @Cron(CronExpression.EVERY_10_SECONDS)
   async handleCron() {

@@ -11,9 +11,9 @@ export class BatchEntity {
   @Column()
   webhookUrl: string;
 
-  @Column({ nullable: true })
+  @Column({ nullable: true, default: 'validating' }) // Default status set to 'validating'
   status: string;
 
   @Column({ nullable: true })
-  result: string;  // Store the result or some summary of the result here
+  result: string; // Store the result or some summary of the result here
 }

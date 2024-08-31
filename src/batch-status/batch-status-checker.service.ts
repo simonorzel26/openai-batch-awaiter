@@ -1,69 +1,83 @@
-import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import fetch from 'node-fetch';
+import { Repository, Not, In } from 'typeorm';
 import { BatchEntity } from '../batch-awaiter/batch.entity';
+import OpenAI from 'openai';
 
 @Injectable()
 export class BatchStatusCheckerService {
+  private openai = new OpenAI();
+
   constructor(
     @InjectRepository(BatchEntity)
     private batchRepository: Repository<BatchEntity>,
   ) {}
 
   async checkAllBatchesStatus() {
-    const batches = await this.batchRepository.find({ where: { status: 'in_progress' } });
+    const batches = await this.batchRepository.find({
+      where: {
+        status: Not(In(['cancelled', 'expired', 'completed', 'failed'])),
+      },
+    });
     console.log('batches', batches);
 
     for (const batch of batches) {
       try {
-        const updatedStatus = await this.checkBatchStatus(batch.batchId);
-
-        if (updatedStatus === 'completed') {
-          const result = await this.retrieveBatchResult(batch.batchId);
-
-          batch.status = 'completed';
-          batch.result = result;
-          await this.batchRepository.save(batch);
-
-          await this.callWebhook(batch.webhookUrl, result);
-        } else if (updatedStatus !== batch.status) {
-          batch.status = updatedStatus;
-          await this.batchRepository.save(batch);
-        }
+        const batchDetails = await this.checkBatchStatus(batch.batchId);
+        this.handleBatchStatus(batch, batchDetails.status);
       } catch (error) {
-        console.error(`Error checking batch status for batchId ${batch.batchId}:`, error);
+        console.error(
+          `Error checking batch status for batchId ${batch.batchId}:`,
+          error,
+        );
       }
     }
   }
 
-  private async checkBatchStatus(batchId: string): Promise<string> {
-    // Replace this with the actual API call to check batch status
-    const status = 'completed'; // Example: in_progress, completed, etc.
-    return status;
+  private async checkBatchStatus(batchId: string): Promise<any> {
+    const batch = await this.openai.batches.retrieve(batchId);
+    return batch;
   }
 
-  private async retrieveBatchResult(batchId: string): Promise<string> {
-    // Replace this with the actual logic to retrieve the result from OpenAI or your API
-    const result = 'Batch result data'; // Placeholder
-    return result;
-  }
-
-  private async callWebhook(webhookUrl: string, result: string) {
-    try {
-      const response = await fetch(webhookUrl, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ result }),
-      });
-
-      if (!response.ok) {
-        console.error('Failed to send data to webhook', await response.text());
-        throw new HttpException('Failed to send data to webhook', HttpStatus.INTERNAL_SERVER_ERROR);
-      }
-    } catch (error) {
-      console.error('Error sending webhook:', error);
-      throw new HttpException('Error sending webhook', HttpStatus.INTERNAL_SERVER_ERROR);
+  private async handleBatchStatus(batch: BatchEntity, status: string) {
+    switch (status) {
+      case 'validating':
+        batch.status = 'validating';
+        console.log(`Batch ${batch.batchId} is currently validating.`);
+        break;
+      case 'failed':
+        batch.status = 'failed';
+        console.error(`Batch ${batch.batchId} failed validation.`);
+        break;
+      case 'in_progress':
+        batch.status = 'in_progress';
+        console.log(`Batch ${batch.batchId} is in progress.`);
+        break;
+      case 'finalizing':
+        batch.status = 'finalizing';
+        console.log(`Batch ${batch.batchId} is finalizing.`);
+        break;
+      case 'completed':
+        batch.status = 'completed';
+        console.log(`Batch ${batch.batchId} has completed.`);
+        // You may want to retrieve and process results here.
+        break;
+      case 'expired':
+        batch.status = 'expired';
+        console.warn(`Batch ${batch.batchId} has expired.`);
+        break;
+      case 'cancelling':
+        batch.status = 'cancelling';
+        console.log(`Batch ${batch.batchId} is being cancelled.`);
+        break;
+      case 'cancelled':
+        batch.status = 'cancelled';
+        console.log(`Batch ${batch.batchId} was cancelled.`);
+        break;
+      default:
+        console.warn(`Batch ${batch.batchId} has an unknown status: ${status}`);
     }
+
+    await this.batchRepository.save(batch);
   }
 }

@@ -20,7 +20,9 @@ describe('BatchAwaiterService', () => {
     }).compile();
 
     service = module.get<BatchAwaiterService>(BatchAwaiterService);
-    repository = module.get<Repository<BatchEntity>>(getRepositoryToken(BatchEntity));
+    repository = module.get<Repository<BatchEntity>>(
+      getRepositoryToken(BatchEntity),
+    );
   });
 
   it('should be defined', () => {
@@ -46,9 +48,9 @@ describe('BatchAwaiterService', () => {
   });
 
   it('should throw an error if batchId or webhookUrl is missing', async () => {
-    await expect(service.processBatch('', 'http://localhost:4000/webhook')).rejects.toThrow(
-      'Missing required fields: batchId and webhookUrl',
-    );
+    await expect(
+      service.processBatch('', 'http://localhost:4000/webhook'),
+    ).rejects.toThrow('Missing required fields: batchId and webhookUrl');
 
     await expect(service.processBatch('12345', '')).rejects.toThrow(
       'Missing required fields: batchId and webhookUrl',

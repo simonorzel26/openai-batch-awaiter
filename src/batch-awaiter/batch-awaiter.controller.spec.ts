@@ -32,7 +32,7 @@ describe('BatchAwaiterController', () => {
     const batchId = '12345';
     const webhookUrl = 'http://localhost:4000/webhook';
 
-    await controller.handleBatch({ id: batchId, webhookUrl });  // Pass as an object
+    await controller.handleBatch({ id: batchId, webhookUrl }); // Pass as an object
 
     expect(service.processBatch).toHaveBeenCalledWith(batchId, webhookUrl);
   });
@@ -41,10 +41,17 @@ describe('BatchAwaiterController', () => {
     const batchId = '12345';
     const webhookUrl = 'http://localhost:4000/webhook';
 
-    jest.spyOn(service, 'processBatch').mockRejectedValueOnce(new Error('Processing failed'));
+    jest
+      .spyOn(service, 'processBatch')
+      .mockRejectedValueOnce(new Error('Processing failed'));
 
-    await expect(controller.handleBatch({ id: batchId, webhookUrl })).rejects.toThrow(
-      new HttpException('An error occurred during processing', HttpStatus.INTERNAL_SERVER_ERROR),
+    await expect(
+      controller.handleBatch({ id: batchId, webhookUrl }),
+    ).rejects.toThrow(
+      new HttpException(
+        'An error occurred during processing',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      ),
     );
   });
 });

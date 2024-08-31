@@ -13,7 +13,10 @@ export class BatchAwaiterService {
   async processBatch(batchId: string, webhookUrl: string): Promise<void> {
     if (!batchId || !webhookUrl) {
       console.error('Missing batchId or webhookUrl', { batchId, webhookUrl });
-      throw new HttpException('Missing required fields: batchId and webhookUrl', HttpStatus.BAD_REQUEST);
+      throw new HttpException(
+        'Missing required fields: batchId and webhookUrl',
+        HttpStatus.BAD_REQUEST,
+      );
     }
 
     // Store batchId and webhookUrl in the database
