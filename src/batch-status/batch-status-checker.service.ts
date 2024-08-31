@@ -6,7 +6,9 @@ import OpenAI from 'openai';
 
 @Injectable()
 export class BatchStatusCheckerService {
-  private openai = new OpenAI();
+  private openai = new OpenAI({
+    apiKey: process.env.OPENAI_API_KEY,
+  });
 
   constructor(
     @InjectRepository(BatchEntity)
