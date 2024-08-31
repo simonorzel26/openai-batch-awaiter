@@ -22,6 +22,8 @@ const submitBatch = async () => {
   if (response.ok) {
     const data = await response.json();
     console.log('Batch submitted successfully:', data);
+    // Response now includes the batchId
+    // Example: { batchId: 'your-custom-batch-id' }
   } else {
     console.error('Failed to submit batch:', response.statusText);
   }
@@ -31,6 +33,19 @@ submitBatch();
 ```
 
 This example demonstrates how to submit a batch processing request to the NestJS application using `node-fetch`. Make sure to replace `"your-custom-batch-id"` and `"https://your-webhook-url.com/webhook"` with your actual batch ID and webhook URL.
+
+## Webhook Notification Example
+
+When a batch completes, the specified webhook URL will receive a POST request with the following JSON payload:
+
+```json
+{
+  "batchId": "your-custom-batch-id",
+  "status": "completed"
+}
+```
+
+This payload includes the `batchId` and the current status of the batch, which can be `completed`, `cancelled`, `expired`, or `failed`.
 
 ## How It Works
 
@@ -124,11 +139,17 @@ src/
    }
    ```
 
-   This will store the batch request in the database and initiate the processing with OpenAI.
+   This will store the batch request in the database and initiate the processing with OpenAI. The response will include the `batchId`:
+
+   ```json
+   {
+     "batchId": "your-custom-batch-id"
+   }
+   ```
 
 2. **Monitor Batch Status:**
 
-   The application automatically checks the status of all batches every minute. When a batch completes, it triggers the specified webhook URL with the results.
+   The application automatically checks the status of all batches every minute. When a batch completes, it triggers the specified webhook URL with the results as shown in the Webhook Notification Example section.
 
 ### Docker Deployment
 
