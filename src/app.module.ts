@@ -2,14 +2,17 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { BatchAwaiterModule } from './batch-awaiter/batch-awaiter.module';
 import { BatchEntity } from './batch-awaiter/batch.entity';
+import * as dotenv from 'dotenv';
+
+dotenv.config();
 
 @Module({
   imports: [
     TypeOrmModule.forRoot({
       type: 'sqlite',
-      database: 'database.sqlite',
+      database: process.env.SQLITE_DATABASE_URL || 'database.sqlite',
       entities: [BatchEntity],
-      synchronize: true, // Automatically sync entities with the database (not recommended in production)
+      synchronize: true,
     }),
     BatchAwaiterModule,
   ],
