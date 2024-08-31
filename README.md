@@ -1,6 +1,6 @@
-# OpenAI Batch Processing with NestJS
+# Webhooks for OpenAI Batch Completions
 
-Welcome to the **OpenAI Batch Processing with NestJS** project! This open-source project is designed to simplify and automate batch processing tasks with OpenAI's Batch API. By leveraging the power of NestJS and SQLite, this application efficiently manages batch requests, periodically checks their status, and automatically triggers webhooks to notify you when your batches are completed. The best part? It’s self-hosted, easily deployable with Docker, and supports external SQLite instances for persistent storage.
+Welcome to the **Webhooks for OpenAI Batch Completions** project! This open-source project is designed to simplify and automate batch processing tasks with OpenAI's Batch API. By leveraging the power of NestJS and SQLite, this application efficiently manages batch requests, periodically checks their status, and automatically triggers webhooks to notify you when your batches are completed. The best part? It’s self-hosted, easily deployable with Docker, and supports external SQLite instances for persistent storage.
 
 ## Quick Example: Submitting a Batch Request with Node.js
 
